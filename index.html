@@ -3,85 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浩光交通股份有限公司 - 專業油品運輸與工業柴油配送</title>
+    <title>浩光交通股份有限公司 - 台灣中油優良承攬商</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* 【重要提醒】
-           請記得將下方的 URL 換成公司實際拍攝的油罐車照片。
-           建議：橫向照片、光線充足、車身乾淨、能看見公司名稱。
-        */
         .hero-bg {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                        url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), 
+                        url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-gray-800 font-sans">
 
-    <header class="bg-slate-900 text-white py-3 sticky top-0 z-50 shadow-md">
+    <header class="bg-slate-900 text-white py-4 sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-2 md:mb-0 text-center md:text-left">
-                <h1 class="text-xl font-bold tracking-wider">浩光交通股份有限公司</h1>
-                <p class="text-xs text-gray-400">統一編號：68670271</p>
+            <div class="text-center md:text-left mb-3 md:mb-0">
+                <h1 class="text-2xl font-bold tracking-tight">浩光交通股份有限公司</h1>
+                <p class="text-xs text-blue-300 font-mono">統一編號：68670271</p>
             </div>
             <div class="flex items-center space-x-6">
-                <a href="tel:062323150" class="hover:text-blue-400 transition flex items-center">
-                    <i class="fas fa-phone-alt mr-2"></i> 06-2323150
-                </a>
-                <a href="#line-contact" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full text-sm flex items-center transition">
-                    <i class="fab fa-line mr-2"></i> 線上諮詢
+                <a href="tel:062323150" class="flex items-center hover:text-blue-400 transition">
+                    <i class="fas fa-phone-alt mr-2 text-blue-400"></i>
+                    <span class="font-bold">06-2323150</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <section class="hero-bg h-[400px] flex items-center justify-center text-center text-white px-4">
-        <div>
-            <h2 class="text-3xl md:text-5xl font-extrabold mb-4 shadow-sm">專業油品運輸，安全紀律至上</h2>
-            <p class="text-lg md:text-xl max-w-2xl mx-auto font-light">
-                浩光交通 —— 台灣中油優良承攬商，致力於危險物品運送的安全與效率。
+    <section class="hero-bg h-[450px] flex items-center justify-center text-center text-white px-4">
+        <div class="max-w-3xl">
+            <h2 class="text-4xl md:text-6xl font-black mb-6 tracking-wider">專業油品運輸<br>安全紀律至上</h2>
+            <div class="h-1 w-24 bg-blue-500 mx-auto mb-6"></div>
+            <p class="text-xl md:text-2xl font-light leading-relaxed">
+                浩光交通 —— 台灣中油優良承攬商<br>
+                致力於危險物品運送的安全與效率
             </p>
         </div>
     </section>
 
     <section class="py-12 bg-white">
         <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto bg-blue-50 border-l-8 border-blue-600 p-8 rounded-r-xl shadow-sm">
+                <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                    <i class="fas fa-briefcase mr-3"></i> 承攬業務項目
+                </h3>
+                <ul class="text-lg text-slate-700 space-y-3">
+                    <li class="flex items-center"><i class="fas fa-caret-right text-blue-600 mr-2"></i> <strong>台灣中油油品專業承攬運輸</strong></li>
+                    <li class="flex items-center"><i class="fas fa-caret-right text-blue-600 mr-2"></i> <strong>工業用柴油配送</strong></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-slate-50">
+        <div class="container mx-auto px-4">
             <div class="max-w-4xl mx-auto">
-                <div class="bg-slate-50 border border-gray-200 rounded-xl shadow-inner p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-slate-800 flex items-center">
-                            <i class="fas fa-gas-pump text-blue-600 mr-3"></i> 台灣中油 (CPC) 最新油價公告
-                        </h3>
-                        <span class="text-sm text-gray-500" id="current-date">最後更新：--/--/--</span>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                    <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+                        <h3 class="font-bold flex items-center"><i class="fas fa-gas-pump mr-2 text-yellow-400"></i> 中油 (CPC) 最新牌價</h3>
+                        <span id="update-time" class="text-xs text-slate-400">更新於：2026/01/22</span>
                     </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="price-board">
-                        <div class="bg-white p-4 rounded-lg border-t-4 border-blue-500 shadow-sm text-center">
-                            <p class="text-gray-500 text-sm mb-1">92無鉛</p>
-                            <p class="text-2xl font-bold text-slate-700" id="price-92">--.-</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border-t-4 border-blue-600 shadow-sm text-center">
-                            <p class="text-gray-500 text-sm mb-1">95無鉛</p>
-                            <p class="text-2xl font-bold text-slate-700" id="price-95">--.-</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border-t-4 border-blue-700 shadow-sm text-center">
-                            <p class="text-gray-500 text-sm mb-1">98無鉛</p>
-                            <p class="text-2xl font-bold text-slate-700" id="price-98">--.-</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-lg border-t-4 border-green-600 shadow-sm text-center">
-                            <p class="text-gray-500 text-sm mb-1">超級柴油</p>
-                            <p class="text-2xl font-bold text-slate-700" id="price-diesel">--.-</p>
-                        </div>
+                    <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 border rounded-xl bg-slate-50"><p class="text-xs text-gray-500 mb-1">92 無鉛</p><p class="text-2xl font-black text-slate-800">$ --.-</p></div>
+                        <div class="text-center p-4 border rounded-xl bg-slate-50"><p class="text-xs text-gray-500 mb-1">95 無鉛</p><p class="text-2xl font-black text-slate-800">$ --.-</p></div>
+                        <div class="text-center p-4 border rounded-xl bg-slate-50"><p class="text-xs text-gray-500 mb-1">98 無鉛</p><p class="text-2xl font-black text-slate-800">$ --.-</p></div>
+                        <div class="text-center p-4 border rounded-xl bg-blue-50 border-blue-200"><p class="text-xs text-blue-600 mb-1 font-bold">超級柴油</p><p class="text-2xl font-black text-blue-900">$ --.-</p></div>
                     </div>
-                    <p class="text-xs text-center text-gray-400 mt-4 italic">※ 數據將自動同步自中油官方公告，實際價格以加油站現場為準。</p>
+                    <p class="text-[10px] text-center text-gray-400 pb-4 italic text-center">※ 本表自動同步中油官方數據，僅供參考</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="line-contact" class="py-12 bg-slate-50 border-y border-gray-200">
+    <section class="py-16 bg-white border-b border-gray-100">
         <div class="container mx-auto px-4 text-center">
-            <h3 class="text-2
+            <h3 class="text-2xl font-bold text-slate-800 mb-10">快速聯絡與配送預約</h3>
+            <div class="flex flex-col md:flex-row items-center justify-center md:space-x-20 space-y-10 md:space-y-0">
+                <div class="relative group">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl blur opacity-25"></div>
+                    <div class="relative bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+                        <img src="line官方qrcode.jpg" alt="浩光交通 LINE QR Code" class="w-48 h-48 mx-auto mb-4">
+                        <p class="font-bold text-green-600 flex items-center justify-center">
+                            <i class="fab fa-line text-2xl mr-2"></i> 掃描加入好友
+                        </p>
+                    </div>
+                </div>
+                <div class="text-left space-y-6 max-w-sm">
+                    <div class="flex items-start">
+                        <span class="bg-green-100 text-green-600 p-2 rounded-lg mr-4"><i class="fas fa-comment-dots"></i></span>
+                        <div><h4 class="font-bold">線上即時報價</h4><p class="text-sm text-gray-500">提供工業柴油配送需求諮詢</p></div>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-4"><i class="fas fa-history"></i></span>
+                        <div><h4 class="font-bold">運輸紀錄追蹤</h4><p class="text-sm text-gray-500">專業調度窗口一對一對應</p></div>
+                    </div>
+                    <a href="https://line.me/ti/p/@your_id" class="inline-block w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-green-700 transition text-center">
+                        手機直接點擊加入 LINE
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-slate-50">
+        <div class="container mx-auto px-4 grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center">
+                <i class="fas fa-check-shield text-3xl text-blue-600 mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">安全管理</h4>
+                <p class="text-gray-500 text-sm leading-loose">全車隊酒精測驗<br>GPS 即時動態監控</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center">
+                <i class="fas fa-tools text-3xl text-slate-600 mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">高標點檢</h4>
+                <p class="text-gray-500 text-sm leading-loose">嚴格車輛自主保養<br>符合中油進廠查核標準</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center">
+                <i class="fas fa-fire-extinguisher text-3xl text-red-600 mb-4"></i>
+                <h4 class="text-lg font-bold mb-3">專業訓練</h4>
+                <p class="text-gray-500 text-sm leading-loose">定期工安消防演練<br>全體司機持合格證照</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-slate-500 py-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-white font-bold text-xl mb-4">浩光交通股份有限公司</p>
+            <div class="flex justify-center space-x-6 mb-6 text-sm">
+                <span>電話：06-2323150</span>
+                <span class="hidden md:inline">|</span>
+                <span>統編：68670271</span>
+            </div>
+            <p class="text-[10px] tracking-widest uppercase">&copy; 2026 Haoguang Transport Co., Ltd. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 更新當前日期
+        const now = new Date();
+        document.getElementById('update-time').innerText = `最後更新：${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+    </script>
+</body>
+</html>
