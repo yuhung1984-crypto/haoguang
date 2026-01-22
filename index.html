@@ -85,7 +85,7 @@
                             <p class="text-2xl font-bold text-slate-700 loading-pulse" id="price-diesel">--.-</p>
                         </div>
                     </div>
-                    <p class="text-xs text-center text-gray-400 mt-4 italic">※ 資料來源：台灣中油官方 Open Data API (即時連線)，實際價格以加油站現場為準。</p>
+                    <p class="text-xs text-center text-gray-400 mt-4 italic">※ 資料來源：台灣中油官方 Open Data API (同步即時牌價)，實際價格以加油站現場為準。</p>
                 </div>
             </div>
         </div>
@@ -181,19 +181,13 @@
         const today = new Date();
         document.getElementById('year').innerText = today.getFullYear();
 
-        // 中油 API 串接邏輯 (修正版：使用 Proxy)
+        // 中油 API 串接邏輯 (修正版：加入 Cache Busting 強制更新)
         async function fetchOilPrice() {
-            // 安全備援價格（以防 API 服務完全中斷時的顯示，已更新至接近即時行情）
-            // 如果 API 成功，這裡的數值會被即時數據覆蓋
             const fallbackPrices = {
-                '92': '29.6',
-                '95': '31.1',
-                '98': '33.1',
-                'diesel': '27.1'
+                '92': '29.0', '95': '30.5', '98': '32.5', 'diesel': '26.5'
             };
 
             const updateUI = (prices, isLive = true) => {
-                // 移除載入動畫
                 document.querySelectorAll('.loading-pulse').forEach(el => el.classList.remove('loading-pulse'));
                 
                 document.getElementById('price-92').innerText = '$' + prices['92'];
@@ -202,14 +196,18 @@
                 document.getElementById('price-diesel').innerText = '$' + prices['diesel'];
 
                 const dateStr = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-                document.getElementById('current-date').innerText = '最後更新：' + dateStr + (isLive ? ' (中油即時連線)' : ' (系統參考價)');
+                document.getElementById('current-date').innerText = '最後更新：' + dateStr + (isLive ? ' (與中油同步)' : ' (參考價)');
                 document.getElementById('current-date').classList.add(isLive ? 'text-green-600' : 'text-gray-500');
             };
 
             try {
-                // [關鍵修正] 使用 'allorigins' 服務作為代理，解決瀏覽器禁止直接讀取中油 API 的 CORS 問題
-                // 原始中油 API: https://vipmember.tmtd.cpc.com.tw/opendata/benz_price_file.aspx
-                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://vipmember.tmtd.cpc.com.tw/opendata/benz_price_file.aspx');
+                // [核心修正] 
+                // 1. 使用 allorigins 代理，繞過瀏覽器限制
+                // 2. 在網址後方加上 '&t=' + Date.now() 時間戳記
+                //    這會騙過代理伺服器，讓它以為這是全新的請求，因此必須去抓最新資料，而不是給舊的快取。
+                const timestamp = Date.now();
+                const targetUrl = 'https://vipmember.tmtd.cpc.com.tw/opendata/benz_price_file.aspx';
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}&t=${timestamp}`;
                 
                 const response = await fetch(proxyUrl);
                 
@@ -219,11 +217,10 @@
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(str, "text/xml");
 
-                // 解析 XML (依據中油格式)
-                const p92 = xmlDoc.querySelector("sPrice1").textContent; // 92無鉛
-                const p95 = xmlDoc.querySelector("sPrice2").textContent; // 95無鉛
-                const p98 = xmlDoc.querySelector("sPrice3").textContent; // 98無鉛
-                const pDiesel = xmlDoc.querySelector("sPrice4").textContent; // 超級柴油
+                const p92 = xmlDoc.querySelector("sPrice1").textContent;
+                const p95 = xmlDoc.querySelector("sPrice2").textContent;
+                const p98 = xmlDoc.querySelector("sPrice3").textContent;
+                const pDiesel = xmlDoc.querySelector("sPrice4").textContent;
 
                 updateUI({
                     '92': p92,
@@ -233,8 +230,7 @@
                 }, true);
 
             } catch (error) {
-                console.warn('連線中油 API 失敗，切換至備援數據。原因:', error);
-                // 萬一 Proxy 服務也忙碌，顯示我們預設的合理價格，避免網頁壞掉
+                console.warn('連線失敗，切換至備援數據:', error);
                 updateUI(fallbackPrices, false);
             }
         }
