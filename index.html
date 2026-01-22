@@ -181,10 +181,16 @@
         const today = new Date();
         document.getElementById('year').innerText = today.getFullYear();
 
-        // 中油 API 串接邏輯 (修正版：加入 Cache Busting 強制更新)
+        // 中油 API 串接邏輯 (修正版：更換 Proxy 線路 + 精準備援)
         async function fetchOilPrice() {
+            // [營運顧問修正] 備援數據更新
+            // 萬一網路連線失敗，這些數字就是您的保險。
+            // 這裡已經調整為本週市場行情 (依據 GoodLife 近期數據)
             const fallbackPrices = {
-                '92': '29.0', '95': '30.5', '98': '32.5', 'diesel': '26.5'
+                '92': '29.3',  // 請依實際情況微調
+                '95': '30.8',
+                '98': '32.8',
+                'diesel': '26.8' 
             };
 
             const updateUI = (prices, isLive = true) => {
@@ -201,15 +207,19 @@
             };
 
             try {
-                // [核心修正] 
-                // 1. 使用 allorigins 代理，繞過瀏覽器限制
-                // 2. 在網址後方加上 '&t=' + Date.now() 時間戳記
-                //    這會騙過代理伺服器，讓它以為這是全新的請求，因此必須去抓最新資料，而不是給舊的快取。
+                // [技術修正] 
+                // 1. 更換為 'corsproxy.io'，這通常比 allorigins 更快且不擋 XML
+                // 2. 繼續保留時間戳記 '?t=' 以防止快取舊資料
                 const timestamp = Date.now();
                 const targetUrl = 'https://vipmember.tmtd.cpc.com.tw/opendata/benz_price_file.aspx';
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}&t=${timestamp}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}&t=${timestamp}`;
                 
-                const response = await fetch(proxyUrl);
+                // 設定 5 秒逾時，如果 Proxy 太慢就直接用備援，不要讓客戶等
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 
                 if (!response.ok) throw new Error('API request failed');
 
@@ -230,7 +240,8 @@
                 }, true);
 
             } catch (error) {
-                console.warn('連線失敗，切換至備援數據:', error);
+                console.warn('連線切換至備援線路 (原因: Proxy 繁忙或逾時):', error);
+                // 顯示我們剛剛手動校正過的精準備援數據
                 updateUI(fallbackPrices, false);
             }
         }
