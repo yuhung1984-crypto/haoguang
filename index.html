@@ -181,11 +181,9 @@
         const today = new Date();
         document.getElementById('year').innerText = today.getFullYear();
 
-        // 中油 API 串接邏輯 (修正版：更換 Proxy 線路 + 精準備援)
+        // 中油 API 串接邏輯 (終極穩定版：使用專屬 Cloudflare Worker)
         async function fetchOilPrice() {
-            // [營運顧問修正] 備援數據更新
-            // 萬一網路連線失敗，這些數字就是您的保險。
-            // 這裡已經調整為本週市場行情 (依據 GoodLife 近期數據)
+            // 備援數據更新
             const fallbackPrices = {
                 '92': '28.9',  // 請依實際情況微調
                 '95': '30.4',
@@ -195,32 +193,28 @@
 
             const updateUI = (prices, isLive = true) => {
                 document.querySelectorAll('.loading-pulse').forEach(el => el.classList.remove('loading-pulse'));
-                
                 document.getElementById('price-92').innerText = '$' + prices['92'];
                 document.getElementById('price-95').innerText = '$' + prices['95'];
                 document.getElementById('price-98').innerText = '$' + prices['98'];
                 document.getElementById('price-diesel').innerText = '$' + prices['diesel'];
-
+                
                 const dateStr = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
                 document.getElementById('current-date').innerText = '最後更新：' + dateStr + (isLive ? ' (與中油同步)' : ' (參考價)');
                 document.getElementById('current-date').classList.add(isLive ? 'text-green-600' : 'text-gray-500');
             };
 
             try {
-                // [技術修正] 
-                // 1. 更換為 'corsproxy.io'，這通常比 allorigins 更快且不擋 XML
-                // 2. 繼續保留時間戳記 '?t=' 以防止快取舊資料
+                // 使用剛剛建立的專屬 Cloudflare Worker 網址，加上 timestamp 防止瀏覽器快取
                 const timestamp = Date.now();
-                const targetUrl = 'https://vipmember.tmtd.cpc.com.tw/opendata/benz_price_file.aspx';
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}&t=${timestamp}`;
+                const workerUrl = `https://shiny-tooth-096c.kennyboy1107.workers.dev/?t=${timestamp}`;
                 
-                // 設定 5 秒逾時，如果 Proxy 太慢就直接用備援，不要讓客戶等
+                // 設定 5 秒逾時
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-                const response = await fetch(proxyUrl, { signal: controller.signal });
+                const response = await fetch(workerUrl, { signal: controller.signal });
                 clearTimeout(timeoutId);
-                
+
                 if (!response.ok) throw new Error('API request failed');
 
                 const str = await response.text();
@@ -241,7 +235,6 @@
 
             } catch (error) {
                 console.warn('連線切換至備援線路 (原因: Proxy 繁忙或逾時):', error);
-                // 顯示我們剛剛手動校正過的精準備援數據
                 updateUI(fallbackPrices, false);
             }
         }
@@ -251,13 +244,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
