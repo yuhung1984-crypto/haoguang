@@ -182,65 +182,77 @@
         document.getElementById('year').innerText = today.getFullYear();
 
         // 中油 API 串接邏輯 (終極穩定版：使用專屬 Cloudflare Worker)
-        async function fetchOilPrice() {
-            // 備援數據更新
-            const fallbackPrices = {
-                '92': '28.9',  // 請依實際情況微調
-                '95': '30.4',
-                '98': '32.4',
-                'diesel': '28.1' 
-            };
+        // 優化後的抓取邏輯
+async function fetchOilPrice() {
+    // 這些是當 API 完全壞掉時才會顯示的「保底」數據
+    const fallbackPrices = {
+        '92': '30.7',  // 建議更新為目前最新的大約數值
+        '95': '32.2',
+        '98': '34.2',
+        'diesel': '29.5' 
+    };
 
-            const updateUI = (prices, isLive = true) => {
-                document.querySelectorAll('.loading-pulse').forEach(el => el.classList.remove('loading-pulse'));
-                document.getElementById('price-92').innerText = '$' + prices['92'];
-                document.getElementById('price-95').innerText = '$' + prices['95'];
-                document.getElementById('price-98').innerText = '$' + prices['98'];
-                document.getElementById('price-diesel').innerText = '$' + prices['diesel'];
-                
-                const dateStr = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
-                document.getElementById('current-date').innerText = '最後更新：' + dateStr + (isLive ? ' (與中油同步)' : ' (參考價)');
-                document.getElementById('current-date').classList.add(isLive ? 'text-green-600' : 'text-gray-500');
-            };
+    const updateUI = (prices, isLive = true) => {
+        document.querySelectorAll('.loading-pulse').forEach(el => el.classList.remove('loading-pulse'));
+        document.getElementById('price-92').innerText = '$' + prices['92'];
+        document.getElementById('price-95').innerText = '$' + prices['95'];
+        document.getElementById('price-98').innerText = '$' + prices['98'];
+        document.getElementById('price-diesel').innerText = '$' + prices['diesel'];
+        
+        const dateStr = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
+        const statusText = isLive ? '● 與中油同步' : '○ 系統連線異常(顯示參考價)';
+        document.getElementById('current-date').innerText = '最後更新：' + dateStr + ' ' + statusText;
+        
+        // 變色提醒：正常綠色，異常灰色
+        const dateEl = document.getElementById('current-date');
+        dateEl.className = isLive ? 'text-sm text-green-600 font-bold' : 'text-sm text-red-400';
+    };
 
-            try {
-                // 使用剛剛建立的專屬 Cloudflare Worker 網址，加上 timestamp 防止瀏覽器快取
-                const timestamp = Date.now();
-                const workerUrl = `https://blue-river-b4a0.yuhung1984.workers.dev/?t=${timestamp}`;
-                
-                // 設定 5 秒逾時
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
+    // 封裝 fetch 邏輯以便重試
+    const tryFetch = async () => {
+        const timestamp = Date.now();
+        const workerUrl = `https://blue-river-b4a0.yuhung1984.workers.dev/?t=${timestamp}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 放寬到 8 秒
 
-                const response = await fetch(workerUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
+        const response = await fetch(workerUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
 
-                if (!response.ok) throw new Error('API request failed');
+        if (!response.ok) throw new Error('伺服器回應錯誤');
 
-                const str = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(str, "text/xml");
+        const str = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(str, "text/xml");
 
-                const p92 = xmlDoc.querySelector("sPrice1").textContent;
-                const p95 = xmlDoc.querySelector("sPrice2").textContent;
-                const p98 = xmlDoc.querySelector("sPrice3").textContent;
-                const pDiesel = xmlDoc.querySelector("sPrice4").textContent;
+        // 檢查 XML 節點是否存在，避免解析錯誤
+        const getVal = (node) => xmlDoc.querySelector(node)?.textContent || null;
+        
+        const p92 = getVal("sPrice1");
+        const p95 = getVal("sPrice2");
+        const p98 = getVal("sPrice3");
+        const pDiesel = getVal("sPrice4");
 
-                updateUI({
-                    '92': p92,
-                    '95': p95,
-                    '98': p98,
-                    'diesel': pDiesel
-                }, true);
+        if (!p92 || !p95) throw new Error('XML 解析失敗');
 
-            } catch (error) {
-                console.warn('連線切換至備援線路 (原因: Proxy 繁忙或逾時):', error);
-                updateUI(fallbackPrices, false);
-            }
+        return { '92': p92, '95': p95, '98': p98, 'diesel': pDiesel };
+    };
+
+    try {
+        const data = await tryFetch();
+        updateUI(data, true);
+    } catch (error) {
+        console.error('API 抓取失敗，嘗試第二次...', error);
+        try {
+            // 失敗後延遲 1 秒再試一次
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const data = await tryFetch();
+            updateUI(data, true);
+        } catch (retryError) {
+            console.error('第二次抓取亦失敗，切換至備援數據', retryError);
+            updateUI(fallbackPrices, false);
         }
-
-        // 執行抓取
-        fetchOilPrice();
+    }
+}
     </script>
 </body>
 </html>
