@@ -185,10 +185,10 @@
         async function fetchOilPrice() {
             // 當 API 壞掉時顯示的最新正確數值 (2026/03/24)
             const fallbackPrices = {
-                '92': '30.7',
-                '95': '32.2',
-                '98': '34.2',
-                'diesel': '29.5' 
+                '92': '--.-',
+                '95': '--.-',
+                '98': '--.-',
+                'diesel': '--.-' 
             };
 
             const updateUI = (prices, isLive = true) => {
