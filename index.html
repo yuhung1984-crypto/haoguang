@@ -183,7 +183,7 @@
 
         // 中油 API 串接邏輯
         async function fetchOilPrice() {
-            // 當 API 壞掉時顯示的最新正確數值 (2026/03/24)
+            //貫徹原則：當 API 壞掉時，絕對不顯示錯誤的舊油價
             const fallbackPrices = {
                 '92': '--.-',
                 '95': '--.-',
